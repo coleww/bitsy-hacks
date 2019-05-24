@@ -26,6 +26,7 @@ A collection of re-usable scripts for [Adam Le Doux](https://twitter.com/adamled
 - 🔚 [end-from-dialog](/dist/end-from-dialog.js): trigger an ending from dialog, including narration text
 - 🚪 [exit-from-dialog](/dist/exit-from-dialog.js): exit to another room from dialog, including conditionals
 - 🛰 [external-game-data](/dist/external-game-data.js): separate Bitsy game data from your (modded) HTML for easier development
+- 🍂 [falling movement](/dist/falling-movement.js): simulate an infinite falling game by restricting movement
 - 🌐 [favicon-from-sprite](/dist/favicon-from-sprite.js): generate a browser favicon (tab icon) from a Bitsy sprite, including animation!
 - 💕 [follower](/dist/follower.js): makes a single sprite follow the player
 - 🎮 [gamepad input](/dist/gamepad-input.js): HTML5 gamepad support
