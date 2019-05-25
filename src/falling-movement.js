@@ -89,8 +89,8 @@ after("movePlayer", function () {
 	// something weird happened
 	} else {
 
-		// ????
-		console.warn('falling-movement error', {oldX, oldY, newX, newY, hackOptions});
+		// for debugging if needed
+		// console.log('falling-movement', {oldX, oldY, newX, newY, hackOptions});
 	}
 
 	// store this movement
