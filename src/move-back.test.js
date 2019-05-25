@@ -20,7 +20,5 @@ test('move-back', async () => {
 	await press('Enter'); // complete dialog
 	await press('Enter'); // end dialog
   await snapshot();
-	// await press('ArrowUp'); // attempt to move up, fail
-	// await snapshot(); // snapshot 1, still in original spot
 	await end();
 });
