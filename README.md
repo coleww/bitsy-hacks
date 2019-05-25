@@ -42,7 +42,7 @@ A collection of re-usable scripts for [Adam Le Doux](https://twitter.com/adamled
 - ⏳ [permanent items](/dist/permanent-items.js): prevent some items from being picked up
 - 💾 [save](/dist/save.js): save/load your game
 - 🛑 [solid items](/dist/solid-items.js): treat some items like sprites that can be placed multiple times
-- 🍂 [step counter](/dist/step-counter.js): count the number of tiles the player has moved
+- 👣 [step-counter](/dist/step-counter.js): count the number of tiles the player has moved
 - ⏱️ [stopwatch](/dist/stopwatch.js): time player actions
 - 🗣 [text-to-speech](/dist/text-to-speech.js): text-to-speech for bitsy dialog
 - 🏰 [tracery processing](/dist/tracery-processing.js): process all dialog text with a tracery grammar
