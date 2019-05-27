@@ -1,18 +1,15 @@
 /**
 ✈️
 @file jump
-@summary simulate jumping by restricting movement
+@summary simulate gravity by restricting movement
 @license MIT
 @version 1.0.0
 @requires 5.3
 @author Cole Sea
 
 @description
-
-
-
-while standing on a wall, press up to jump.
-player will keep moving up for x moves, pause for y moves, then move down for z moves
+while standing on a wall or sprite, press up to jump.
+if you aren't standing on a wall or sprite or mid-jump, yr forced downwards
 
 
 
@@ -29,16 +26,14 @@ import {
 
 export var hackOptions = {
   // after pressing up, how many tiles should player go up before peak is reached
-  rise: 3,
-  // upon reaching peak of jump, how many moves should player stay still before moving down
-  peak: 1
+  jumpPower: 2
 };
 
 
 
 var noop = function () {};
 
-var oldX, oldY, isJumping, jumpCounter = 0, fallCounter = 0;
+var oldX, oldY, isJumping, jumpCounter = 0, fallCounter = 0, fallingHorizMovesCounter = 0;
 
 before("movePlayer", function () {
 	var player = bitsy.player();
@@ -73,60 +68,87 @@ after("movePlayer", function () {
 		// console.log("?????");
 	}
 
+	player.x = oldX;
   player.y = oldY;
 
   if (currentMovement === 'up' && !isJumping && fallCounter === 0 && (bitsy.isWallDown() || bitsy.getSpriteDown())) {
-    isJumping = true;
+
+		isJumping = true;
     jumpCounter = 0;
+		console.log('starting jump', {isJumping, jumpCounter, currentMovement, fallCounter, oldX, newX, oldY, newY})
   }
 
-  if (isJumping && !bitsy.isWallUp() && !bitsy.getSpriteUp()) {
+  if (isJumping && !bitsy.isWallUp() && !bitsy.getSpriteUp() && jumpCounter <= hackOptions.jumpPower) {
+		console.log('in the jump', {isJumping, jumpCounter, currentMovement, fallCounter, oldX, newX, oldY, newY})
     jumpCounter += 1
     if (currentMovement === 'down') jumpCounter += 1; // let player press down to "cancel" part of the jump
 
-    if (jumpCounter <= hackOptions.rise) {
+		player.y -= 1;
 
-      // moving upwards if that won't cause a collission
-      // if (!bitsy.isWallUp() && !bitsy.getSpriteUp()) {
-        player.y -= 1;
-      // } else {
-      //   // collided with something///so this is now the "peak"
-      //   isJumping = false;
-      //   jumpCounter = 0;
-      //   fallCounter = 0;
-      // }
-
-    } else if (jumpCounter < hackOptions.rise + hackOptions.peak) {
-
-      // dont allow horizontal movement during the peak
-      player.x = oldX;
-
-    } else {
-
-      // peak is reached, let gravity take over
-      isJumping = false;
-      jumpCounter = 0;
-      fallCounter = 0;
-    }
+		if (allowHorizontalMovement(currentMovement)) {
+			console.log('allowing horizontal movement in a jump', {isJumping, jumpCounter, currentMovement, fallCounter, oldX, newX, oldY, newY})
+			player.x = newX
+		}
   } else {
+		isJumping = false;
+		console.log('gravity is being applied',  {isJumping, jumpCounter, currentMovement, fallCounter, oldX, newX, oldY, newY})
     // if you aren't jumping then yr falling
-    if (!bitsy.isWallDown() && !bitsy.getSpriteDown()) {
+
+
+		// give player a chance to move at the apex, otherwise movement feels bad :~(
+		if (fallCounter === 0) {
+			// let em chill in the air for the first frame like wile e coyote
+			// TODO: is this really better than shoving them down? im not sure.
+			player.y = oldY;
+			console.log('starting a fall',  {isJumping, jumpCounter, currentMovement, fallCounter, oldX, newX, oldY, newY})
+			if (allowHorizontalMovement(currentMovement)) {
+				console.log('moving horiz at start of fall',  {isJumping, jumpCounter, currentMovement, fallCounter, oldX, newX, oldY, newY})
+				player.x = newX
+			}
+		}
+
+		fallCounter += 1;
+
+    if (fallCounter > 1 && !bitsy.isWallDown() && !bitsy.getSpriteDown()) {
+			console.log('falling', {isJumping, jumpCounter, currentMovement, fallCounter, oldX, newX, oldY, newY})
       // if there's nothing below you, gravity is applied
       player.y += 1
-      fallCounter += 1;
+      // fallCounter += 1;
 
-      if (fallCounter > 3) {
-        // can only move horizontally at the start of a fall
-        player.x = oldX;
-      }
-    } else {
+			// TODO: TRIGGER ITEMS if u move to their spot
+			// after applying gravity, then try to move horizontally
+
+			if (allowHorizontalMovement(currentMovement) && fallingHorizMovesCounter < fallCounter / hackOptions.jumpPower) {
+
+				console.log('moving horiz while falling',  {isJumping, jumpCounter, currentMovement, fallCounter, oldX, newX, oldY, newY})
+				fallingHorizMovesCounter += 1;
+				player.x = newX;
+			}
+
+			// player landed, reset counter before next movement loop
+			if (bitsy.isWallDown() || bitsy.getSpriteDown()) {
+
+				console.log('landed on something at end of fall',  {isJumping, jumpCounter, currentMovement, fallCounter, oldX, newX, oldY, newY})
+				fallCounter = 0
+			}
+    } else if (bitsy.isWallDown() || bitsy.getSpriteDown()){
+			console.log('on solid ground', {isJumping, jumpCounter, currentMovement, fallCounter, oldX, newX, oldY, newY})
       // standing above wall or a sprite. no gravity
       fallCounter = 0
+			fallingHorizMovesCounter = 0
+			player.x = newX;
     }
   }
+	console.log('end of move loop', {isJumping, jumpCounter, currentMovement, fallCounter, oldX, newX, oldY, newY})
 });
 
-addDialogTag("increaseJump", function (environment, parameters, onReturn) {
+function allowHorizontalMovement(currMove) {
+	var moveLeft = currMove === 'left' && !bitsy.isWallLeft() && !bitsy.getSpriteLeft();
+	var moveRight = currMove === 'right' && !bitsy.isWallRight() && !bitsy.getSpriteRight();
+	return moveLeft || moveRight;
+}
+
+addDialogTag("increaseJumpPower", function (environment, parameters, onReturn) {
 	var amount = ~~parameters[0];
-  hackOptions.rise += amount;
+  hackOptions.jumpPower += amount;
 })

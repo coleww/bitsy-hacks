@@ -33,6 +33,7 @@ A collection of re-usable scripts for [Adam Le Doux](https://twitter.com/adamled
 - 🤕 [health](/dist/health.js): give the player a health bar and end the game if it depletes
 - 🕷 [itsy-bitsy](/dist/itsy-bitsy.js): for when bitsy's not small enough
 - ☕ [javascript dialog](/dist/javascript-dialog.js): execute arbitrary javascript from dialog
+- ✈️ [jump](/dist/jump.js): simulate jumping by restricting movement
 - 🔀 [logic-operators-extended](/dist/logic-operators-extended.js): adds conditional logic operators
 - 🙌 [move-back](/dist/move-back.js): push the player back with dialogue
 - 👨‍👨‍👧‍👧 [multi-sprite avatar](/dist/multi-sprite-avatar.js): make the player big
