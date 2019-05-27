@@ -9,8 +9,12 @@
 	"version": "3.1.0",
 	"scripts": {
 		"build": "node --experimental-modules cli.mjs",
-		"test": "jest --runInBand",
-		"prepare": "npm run build"
+		"test": "jest -o --runInBand",
+		"prepare": "npm run build",
+		"copy": "npm run copy:scripts && npm run copy:license && npm run copy:gh",
+		"copy:scripts": "cp -r ./dist/. ../bitsy/editor/shared/hacks",
+		"copy:license": "cp ./LICENSE.md ../bitsy/editor/shared/hacks/LICENSE.md && cp ./README.md ../bitsy/editor/shared/hacks/README.md",
+		"copy:gh": "cp -r ../bitsy/editor/ ../bitsy/docs"
 	},
 	"author": "Sean S. LeBlanc <sean.s.leblanc@gmail.com>",
 	"license": "MIT (individual hacks have their own license specified)",
