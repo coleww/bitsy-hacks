@@ -15,22 +15,11 @@ NOTE that this script assumes the player can only move 1 space at a time.
 
 HOW TO USE:
 1. Copy-paste into a script tag after the bitsy source
-2. Edit `preventUpwardMovement` and `restrictHorizontalMovement` below as needed
 */
 import bitsy from "bitsy";
 import {
 	after, before,
 } from "./helpers/kitsy-script-toolkit";
-
-export var hackOptions = {
-	// If `preventUpwardMovement` is true:
-	// 	pressing up will do nothing
-	preventUpwardMovement: true,
-	// If `restrictHorizontalMovement` is true:
-	// 	pressing left/right will only move the player's sprite left/right
-	//  if their last movement was downward
-	restrictHorizontalMovement: true
-};
 
 var oldX, oldY, lastMovement;
 
@@ -49,43 +38,36 @@ after("movePlayer", function () {
 	var newY = player.y;
 	var currentMovement;
 
-	// moved up
+		// moved up
 	if (newY === oldY - 1) {
 
 		currentMovement = 'up';
 
-		if (hackOptions.preventUpwardMovement) {
-			// if player tries to move up, move them back :p
-			player.y = oldY;
-		}
+		// if the player ever tries to move up, move them back :p
+		player.y = oldY;
 
-	// moved down
+		// moved down
 	} else if (newY === oldY + 1) {
 
 		currentMovement = 'down';
 
 		// do nothing, downward is heavenward!
 
-	// moved left
-	} else if (newX === oldX - 1) {
+		// moved left
+	} else if ((newX === oldX - 1) || (newX === oldX + 1)) {
+		currentMovement = 'horizontal';
 
-		currentMovement = 'left';
-
-		if (hackOptions.restrictHorizontalMovement && lastMovement !== 'down') {
-			// if player tries to move left, but their last movement wasn't down, move them back :p
+		if (lastMovement !== 'down') {
+			// move the player back
 			player.x = oldX;
+
+			// move them down instead (if possible)
+			currentMovement = 'down'
+			var objectBelow = bitsy.isWallDown() || bitsy.getSpriteDown();
+			if (!objectBelow) {
+				player.y += 1
+			}
 		}
-
-	// moved right
-	} else if (newX === oldX + 1) {
-
-		currentMovement = 'right';
-
-		if (hackOptions.restrictHorizontalMovement && lastMovement !== 'down') {
-			// if player tries to move right, but their last movement wasn't down, move them back :p
-			player.x = oldX;
-		}
-
 	// something weird happened
 	} else {
 
