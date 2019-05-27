@@ -5,7 +5,7 @@ import {
 	snapshot,
 } from './test/bitsy';
 
-test('falling movement', async () => {
+test('falling-movement', async () => {
 	await start({
 		hacks: ['falling-movement'],
 	});
