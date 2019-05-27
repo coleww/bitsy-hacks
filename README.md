@@ -30,6 +30,7 @@ A collection of re-usable scripts for [Adam Le Doux](https://twitter.com/adamled
 - 🌐 [favicon-from-sprite](/dist/favicon-from-sprite.js): generate a browser favicon (tab icon) from a Bitsy sprite, including animation!
 - 💕 [follower](/dist/follower.js): makes a single sprite follow the player
 - 🎮 [gamepad input](/dist/gamepad-input.js): HTML5 gamepad support
+- 🤕 [health](/dist/health.js): give the player a health bar and end the game if it depletes
 - 🕷 [itsy-bitsy](/dist/itsy-bitsy.js): for when bitsy's not small enough
 - ☕ [javascript dialog](/dist/javascript-dialog.js): execute arbitrary javascript from dialog
 - 🔀 [logic-operators-extended](/dist/logic-operators-extended.js): adds conditional logic operators
