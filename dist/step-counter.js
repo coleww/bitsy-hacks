@@ -11,10 +11,11 @@
 For the speedrunners ;)
 
 Count how many tiles the player has moved since the game started,
-or reset the counter to start over.
+or reset the counter to start over. Will set and update a variable `steps`
+that you can use as needed.
 
 Usage:
-	(saySteps): prints the current number of steps taken
+	{say steps}: prints the current number of steps taken
 	(resetSteps): resets the step counter
 
 NOTE that this script assumes the player can only move 1 space at a time.
@@ -77,23 +78,6 @@ function inject(searchRegex, replaceString) {
 function unique(array) {
 	return array.filter(function (item, idx) {
 		return array.indexOf(item) === idx;
-	});
-}
-
-/**
- * Helper for printing dialog inside of a dialog function.
- * Intended to be called using the environment + onReturn parameters of the original function;
- * e.g.
- * addDialogTag('myTag', function (environment, parameters, onReturn) {
- * 	printDialog(environment, 'my text', onReturn);
- * });
- * @param {Environment} environment Bitsy environment object; first param to a dialog function
- * @param {String} text Text to print
- * @param {Function} onReturn Bitsy onReturn function; third param to a dialog function
- */
-function printDialog(environment, text, onReturn) {
-	environment.GetDialogBuffer().AddText(text, function() {
-		onReturn(null);
 	});
 }
 
@@ -320,16 +304,13 @@ after("movePlayer", function () {
   if (oldX !== newX || oldY !== newY) {
     // if either value changed, then the player moved!
     steps++;
+		bitsy.scriptInterpreter.SetVariable('steps', steps);
   }
 });
 
 addDialogTag('resetSteps', function () {
 	steps = 0;
-});
-
-// add display function
-addDialogTag('saySteps', function (environment, parameters, onReturn) {
-	printDialog(environment, `${steps}`, onReturn);
+	bitsy.scriptInterpreter.SetVariable('steps', steps);
 });
 
 }(window));

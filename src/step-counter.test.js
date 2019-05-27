@@ -9,7 +9,7 @@ import {
 test('step-counter', async () => {
 	await start({
 		hacks: ['step-counter'],
-		catDialog: '\\(saySteps\\)(saySteps)\\(resetSteps\\)(resetSteps)',
+		catDialog: '{say steps} RESET: (resetSteps)',
 	});
 	await press('Enter'); // complete title dialog
 	await press('Enter'); // end dialog

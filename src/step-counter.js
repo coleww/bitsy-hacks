@@ -11,10 +11,11 @@
 For the speedrunners ;)
 
 Count how many tiles the player has moved since the game started,
-or reset the counter to start over.
+or reset the counter to start over. Will set and update a variable `steps`
+that you can use as needed.
 
 Usage:
-	(saySteps): prints the current number of steps taken
+	{say steps}: prints the current number of steps taken
 	(resetSteps): resets the step counter
 
 NOTE that this script assumes the player can only move 1 space at a time.
@@ -46,14 +47,11 @@ after("movePlayer", function () {
   if (oldX !== newX || oldY !== newY) {
     // if either value changed, then the player moved!
     steps++;
+		bitsy.scriptInterpreter.SetVariable('steps', steps);
   }
 });
 
 addDialogTag('resetSteps', function () {
 	steps = 0
-});
-
-// add display function
-addDialogTag('saySteps', function (environment, parameters, onReturn) {
-	printDialog(environment, `${steps}`, onReturn);
+	bitsy.scriptInterpreter.SetVariable('steps', steps);
 });
