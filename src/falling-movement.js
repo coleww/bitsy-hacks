@@ -82,6 +82,7 @@ after("movePlayer", function () {
 });
 
 
-addDialogTag('toggleFalling', function () {
+addDialogTag('toggleFalling', function (env, params, onReturn) {
 	active = !active;
+	onReturn(null);
 });
