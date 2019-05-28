@@ -37,6 +37,7 @@ var oldX,
 		oldY,
 		isJumping,
 		changedRooms = false,
+		lastRoom,
 		jumpCounter = 0,
 		fallCounter = 0,
 		fallingHorizMovesCounter = 0,
@@ -84,7 +85,7 @@ before("movePlayer", function () {
 	wasStandingOnSomething = isWall('down', oldX, oldY);
 	console.log("before move", {oldX, oldY, wasStandingOnSomething})
 	// TODO get current Room id for moving u back
-	// currentRoom =
+	lastRoom = bitsy.curRoom;
 });
 
 after("movePlayer", function () {
@@ -111,10 +112,12 @@ after("movePlayer", function () {
 		currentMovement = 'right';
 	// changed room or something
 	} else if (newX === oldX && newY === oldY){
-		console.log('nothing happened', {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+		console.log('nothing happened', {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
 	} else {
 		changedRooms = true;
-		console.log('changed rooms', {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+		var sameRoom = bitsy.curRoom === lastRoom;
+		console.log('should be equal', changedRooms, sameRoom);
+		console.log('changed rooms', {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
     // TODO: does the above if/else miss any moves that this script causes?
 		// console.log("?????");
 	}
@@ -124,12 +127,11 @@ after("movePlayer", function () {
 
 	var reallyMovedUp = currentMovement === 'up' || (changedRooms && newY === 15)
 
-	// TODO: this needs to detect if yr at the edge of the world lol
   if (reallyMovedUp && !isJumping && fallCounter === 0 && wasStandingOnSomething) {
 
 		isJumping = true;
     jumpCounter = 0;
-		console.log('starting jump', {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+		console.log('starting jump', {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
   }
 
 	// or: MAKE EXITS not work if yr last tile was also an exit
@@ -138,7 +140,7 @@ after("movePlayer", function () {
 	// TODO: need to IGNORE THIS sometimes? jump through exit then move right. should move you diagonally right but does not. because u changed rooms due to hitting a space you didn't actually land on!
 	if (changedRooms && !lastMoveWasARoomChange) {
 		// for now, don't worry about room changes updating the correct counters and such. just let it do its thing
-		console.log('changed rooms resetting player to new coords', {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+		console.log('changed rooms resetting player to new coords', {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
 		player.x = newX;
 	  player.y = newY;
 		return;
@@ -148,7 +150,7 @@ after("movePlayer", function () {
 	}
 
   if (isJumping && !bitsy.isWallUp() && !bitsy.getSpriteUp() && jumpCounter <= hackOptions.jumpPower && currentMovement !== 'down') {
-		console.log('in the jump', {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+		console.log('in the jump', {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
     jumpCounter += 1
 
 		player.y -= 1;
@@ -156,12 +158,12 @@ after("movePlayer", function () {
 
 
 		if (allowHorizontalMovement(currentMovement)) {
-			console.log('allowing horizontal movement in a jump', {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+			console.log('allowing horizontal movement in a jump', {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
 			player.x = newX
 		}
   } else {
 		isJumping = false;
-		console.log('gravity is being applied',  {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+		console.log('gravity is being applied',  {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
     // if you aren't jumping then yr falling
 
 
@@ -170,9 +172,9 @@ after("movePlayer", function () {
 			// let em chill in the air for the first frame like wile e coyote
 			// TODO: is this really better than shoving them down? im not sure.
 			player.y = oldY;
-			console.log('starting a fall',  {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+			console.log('starting a fall',  {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
 			if (allowHorizontalMovement(currentMovement)) {
-				console.log('moving horiz at start of fall',  {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+				console.log('moving horiz at start of fall',  {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
 				player.x = newX
 			}
 		}
@@ -180,7 +182,7 @@ after("movePlayer", function () {
 		fallCounter += 1;
 
     if (fallCounter > 1 && !bitsy.isWallDown() && !bitsy.getSpriteDown()) {
-			console.log('falling', {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+			console.log('falling', {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
       // if there's nothing below you, gravity is applied
       player.y += 1
       // fallCounter += 1;
@@ -189,9 +191,10 @@ after("movePlayer", function () {
 			// TODO: TRIGGER ITEMS AND EXITS if u move to a spot that was not where u were supposed to go OH GOD WHAT IF THER are 2 in one spot
 			// after applying gravity, then try to move horizontally
 
+			// TODO: FURTHER RESTRICT HORIZONTAL MOVEMENT WHILE FALLING
 			if (allowHorizontalMovement(currentMovement) && fallingHorizMovesCounter < fallCounter / hackOptions.jumpPower) {
 
-				console.log('moving horiz while falling',  {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+				console.log('moving horiz while falling',  {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
 				fallingHorizMovesCounter += 1;
 				player.x = newX;
 			}
@@ -199,18 +202,19 @@ after("movePlayer", function () {
 			// player landed, reset counter before next movement loop
 			if (bitsy.isWallDown() || bitsy.getSpriteDown()) {
 
-				console.log('landed on something at end of fall',  {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+				console.log('landed on something at end of fall',  {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
 				fallCounter = 0
 			}
     } else if (bitsy.isWallDown() || bitsy.getSpriteDown()){
-			console.log('on solid ground', {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+			// TODO: APPLY FALLY DAMAGE HERE!
+			console.log('on solid ground', {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
       // standing above wall or a sprite. no gravity
       fallCounter = 0
 			fallingHorizMovesCounter = 0
 			player.x = newX;
     }
   }
-	console.log('end of move loop', {isJumping, jumpCounter, changedRooms, currentMovement, fallCounter, oldX, newX, oldY, newY})
+	console.log('end of move loop', {isJumping, jumpCounter, changedRooms, lastRoom, currentMovement, fallCounter, oldX, newX, oldY, newY})
 });
 
 function allowHorizontalMovement(currMove) {
