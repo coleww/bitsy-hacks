@@ -18,12 +18,13 @@ HOW TO USE:
 */
 import bitsy from "bitsy";
 import {
-	after, before,
+	after, before, addDialogTag
 } from "./helpers/kitsy-script-toolkit";
 
-var oldX, oldY, lastMovement;
+var oldX, oldY, lastMovement, active = false;
 
 before("movePlayer", function () {
+	if (!active) return;
 	var player = bitsy.player();
 	// store current position before any movement happens
 	oldX = player.x;
@@ -33,6 +34,7 @@ before("movePlayer", function () {
 // note: this function is intentionally verbose so that it may be
 // forked to implement other movement customizations
 after("movePlayer", function () {
+	if (!active) return;
 	var player = bitsy.player();
 	var newX = player.x;
 	var newY = player.y;
@@ -77,4 +79,9 @@ after("movePlayer", function () {
 
 	// store this movement
 	lastMovement = currentMovement;
+});
+
+
+addDialogTag('toggleFalling', function () {
+	active = !active;
 });
