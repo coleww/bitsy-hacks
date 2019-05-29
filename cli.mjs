@@ -6,7 +6,7 @@ import eslint from "rollup-plugin-eslint";
 
 import headerComment from "./HeaderCommentPlugin";
 import topLevelOptions from "./TopLevelOptionsPlugin";
-import readme from "./ReadmePlugin";
+// import readme from "./ReadmePlugin";
 
 import build from './index';
 
@@ -27,7 +27,7 @@ async function buildHacks(hacks) {
 	// build
 	const output = await build(hacks, [
 		eslint({}),
-		readme.plugin(),
+		// readme.plugin(),
 		headerComment(),
 		topLevelOptions()
 	]);
@@ -35,8 +35,8 @@ async function buildHacks(hacks) {
 	// write to dist
 	await Promise.all(output.map((file, idx) => fsp.writeFile(outputFiles[idx], file)));
 
-	readme.parse();
-	readme.write();
+	// readme.parse();
+	// readme.write();
 }
 
 async function getArgs() {
